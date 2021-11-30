@@ -1,5 +1,7 @@
 package com.globallogic.PersonDemo.Controller;
 
+import com.globallogic.PersonDemo.CustomException.ControllerException;
+import com.globallogic.PersonDemo.CustomException.ServiceException;
 import com.globallogic.PersonDemo.Model.Person;
 import com.globallogic.PersonDemo.Servive.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-
 
 @RestController
 @RequestMapping("/api/v1/person")
@@ -29,8 +29,13 @@ public class PersonController {
             return  new ResponseEntity<>(local_person,HttpStatus.CREATED);
 
         }
+        catch (ServiceException se){
+            ControllerException ce=new ControllerException(se.getErrorMessage(), se.getErrorCode());
+            return  new ResponseEntity<>(ce,HttpStatus.BAD_REQUEST);
+        }
         catch (Exception e){
-            return  new ResponseEntity<>("Message : "+e.getMessage(), HttpStatus.CONFLICT);
+            ControllerException ce= new ControllerException("611","Something Went Wrong in Controller");
+            return  new ResponseEntity<>(ce, HttpStatus.BAD_REQUEST);
 
         }
     }
@@ -54,5 +59,13 @@ public class PersonController {
         return new ResponseEntity<Void>(HttpStatus.ACCEPTED);
 
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<Person> updatePerson(@RequestBody Person person){
+        Person person1=service.SavePerson(person);
+        return new ResponseEntity<Person>(person1,HttpStatus.CREATED);
+    }
+
+
 
 }
