@@ -30,7 +30,7 @@ public class PersonController {
 
         }
         catch (ServiceException se){
-            ControllerException ce=new ControllerException(se.getErrorMessage(), se.getErrorCode());
+            ControllerException ce=new ControllerException(se.getErrorCode(),se.getErrorMessage());
             return  new ResponseEntity<>(ce,HttpStatus.BAD_REQUEST);
         }
         catch (Exception e){
@@ -48,8 +48,19 @@ public class PersonController {
 
     @GetMapping("/get/{id}")
     public ResponseEntity<?> getUser(@PathVariable("id") Long id){
-        Person person=service.getPersonById(id);
-        return  new ResponseEntity<>(person,HttpStatus.OK);
+        try {
+            Person person=service.getPersonById(id);
+            return  new ResponseEntity<>(person,HttpStatus.OK);
+        }catch (ServiceException se){
+            ControllerException ce=new ControllerException(se.getErrorCode(),se.getErrorMessage());
+            return  new ResponseEntity<>(ce,HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e){
+            ControllerException ce= new ControllerException("612","Something Went Wrong in Controller");
+            return  new ResponseEntity<>(ce, HttpStatus.BAD_REQUEST);
+
+        }
+
     }
 
 

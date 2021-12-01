@@ -38,17 +38,47 @@ public class PersonService  implements  PersonServiveInterface{
 
     @Override
     public List<Person> getAllPerson() {
-        return repository.findAll();
+        List<Person> personList=null;
+        try {
+            personList= repository.findAll();
+        }catch (Exception e){
+            throw new ServiceException("610","Something Went Wrong in Service Layer While Deleting Employee"+e.getMessage());
+        }
+        if(personList.isEmpty()){
+          throw new ServiceException("604","List is Empty we have nothing to Return");
+        }
+        return personList;
     }
 
     @Override
     public Person getPersonById(Long personId) {
-        return repository.findById(personId).get();
+        try {
+            return repository.findById(personId).get();
+        }catch (IllegalArgumentException ie){
+            throw  new ServiceException("606","Given Person id is Null ,Please Send Proper Id to Searched"+ie.getMessage());
+
+        }catch (java.util.NoSuchElementException e){
+            throw new ServiceException("607","No such Person id Exist in DB"+e.getMessage());
+        }
+        catch (Exception e){
+            throw new ServiceException("610","Something Went Wrong in Service Layer While Deleting Employee"+e.getMessage());
+        }
+
     }
 
     @Override
     public void deletePersonById(Long personId) {
-        repository.deleteById(personId);
+
+        try {
+            repository.deleteById(personId);
+        }
+        catch (IllegalArgumentException ie){
+            throw  new ServiceException("608","Given Person id is Null ,Please Send Proper Id"+ie.getMessage());
+
+        }catch (Exception e){
+            throw new ServiceException("610","Something Went Wrong in Service Layer While Deleting Employee"+e.getMessage());
+        }
+
 
     }
 }
